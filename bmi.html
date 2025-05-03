@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康评估仪 - TechToolbox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="./static/css/bmi.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="back-btn">← 返回首页</a>
+        <h1>健康评估仪</h1>
+    </header>
+
+    <div class="bmi-container">
+        <div class="input-group">
+            <div class="input-card">
+                <h3>身高 (cm)</h3>
+                <input type="number" class="bmi-input" id="height" 
+                       step="0.1" oninput="calculateBMI()">
+            </div>
+            
+            <div class="input-card">
+                <h3>体重 (kg)</h3>
+                <input type="number" class="bmi-input" id="weight" 
+                       step="0.1" oninput="calculateBMI()">
+            </div>
+        </div>
+
+        <div class="result-display">
+            <div class="bmi-value" id="bmiValue">0.0</div>
+            <div class="health-status" id="healthStatus">等待输入数据</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="bmiProgress"></div>
+            </div>
+        </div>
+
+        <div class="history-panel">
+            <h3>历史记录 📆</h3>
+            <div id="bmiHistory"></div>
+            <button class="clear-btn" onclick="clearHistory()">
+                🗑️ 清除历史
+            </button>
+        </div>
+    </div>
+
+    <script src="./static/js/bmi.js"></script>
+</body>
+</html>

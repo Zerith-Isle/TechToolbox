@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时空转换器 - TechToolbox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --quantum-blue: #00f3ff;
+            --cyber-purple: #bc00ff;
+            --neon-border: rgba(0, 243, 255, 0.3);
+            --matrix-green: #00ff9d;
+            --deep-space: #0a192f;
+            --card-bg: rgba(10, 25, 47, 0.95);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --input-bg: rgba(0, 0, 20, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--deep-space) 0%, #020c1b 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(10, 25, 47, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--neon-border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--quantum-blue);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+
+        .back-btn {
+            color: var(--quantum-blue);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: opacity 0.3s;
+        }
+
+        .back-btn:hover {
+            opacity: 0.8;
+        }
+
+        .timestamp-container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 2rem;
+            border: 1px solid var(--neon-border);
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-card::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 15px,
+                var(--neon-border) 15px,
+                var(--neon-border) 30px
+            );
+            animation: scanline 20s infinite linear;
+            opacity: 0.1;
+        }
+
+        .current-time {
+            text-align: center;
+            color: var(--matrix-green);
+            margin-bottom: 2rem;
+            font-size: 1.2em;
+            padding: 1rem;
+            background: var(--input-bg);
+            border-radius: 15px;
+            border: 1px solid var(--neon-border);
+        }
+
+        .conversion-grid {
+            display: grid;
+            grid-template-columns: 1fr 48px 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .time-card {
+            background: var(--input-bg);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 2px solid var(--quantum-blue);
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .time-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+        }
+
+        .time-display {
+            font-size: 1.8em;
+            color: var(--matrix-green);
+            text-align: center;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            min-height: 2.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--neon-border);
+        }
+
+        .timezone-selector {
+            background: rgba(0, 0, 30, 0.8);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        select, input[type="datetime-local"] {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--quantum-blue);
+            color: var(--quantum-blue);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        select:focus, input[type="datetime-local"]:focus {
+            outline: none;
+            border-color: var(--matrix-green);
+            box-shadow: 0 0 15px rgba(0, 255, 157, 0.3);
+        }
+
+        .conversion-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .cyber-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, 
+                var(--quantum-blue) 0%, 
+                var(--cyber-purple) 100%);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-weight: 600;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .cyber-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+
+        .history-panel {
+            margin-top: 2rem;
+            background: var(--input-bg);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid var(--neon-border);
+        }
+
+        .history-panel h3 {
+            color: var(--matrix-green);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .history-item {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid var(--neon-border);
+            transition: all 0.3s;
+        }
+
+        .history-item:hover {
+            transform: translateX(5px);
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-50%); }
+            100% { transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .timestamp-container {
+                padding: 1rem;
+                margin: 1rem;
+            }
+
+            .conversion-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .time-display {
+                font-size: 1.4em;
+            }
+
+            .main-card {
+                padding: 1.5rem;
+            }
+
+            .cyber-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .timestamp-container {
+                padding: 0.5rem;
+                margin: 0.5rem;
+            }
+
+            .main-card {
+                padding: 1rem;
+            }
+
+            .time-card {
+                padding: 1rem;
+            }
+
+            .time-display {
+                font-size: 1.2em;
+                padding: 0.8rem;
+            }
+
+            select, input[type="datetime-local"] {
+                padding: 0.6rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="back-btn">← 返回首页</a>
+        <h1>时空转换器</h1>
+    </header>
+
+    <div class="timestamp-container">
+        <div class="main-card">
+            <div class="current-time">
+                🕒 当前时间戳: <span id="liveTimestamp"></span>
+            </div>
+
+            <div class="conversion-grid">
+                <div class="time-card">
+                    <div class="time-display" id="inputTime">
+                        点击输入时间
+                    </div>
+                    <input type="datetime-local" 
+                           id="timeInput" 
+                           onchange="updateConversion()">
+                    <div class="timezone-selector">
+                        <select id="fromTimezone" onchange="updateConversion()">
+                            <option value="local">本地时区</option>
+                            <option value="UTC">UTC</option>
+                            <option value="Asia/Shanghai">上海</option>
+                            <option value="America/New_York">纽约</option>
+                            <option value="Europe/London">伦敦</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="conversion-btn">
+                    <div style="font-size: 2em; color: var(--cyber-purple);">⇄</div>
+                    <button class="cyber-btn" onclick="convertNow()">立即转换</button>
+                </div>
+
+                <div class="time-card">
+                    <div class="time-display" id="outputTime">
+                        结果将显示在此
+                    </div>
+                    <div class="timezone-selector">
+                        <select id="toTimezone" onchange="updateConversion()">
+                            <option value="UTC">UTC</option>
+                            <option value="local">本地时区</option>
+                            <option value="Asia/Tokyo">东京</option>
+                            <option value="Europe/Paris">巴黎</option>
+                            <option value="Australia/Sydney">悉尼</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-panel">
+                <h3>⏳ 转换历史</h3>
+                <div id="conversionHistory"></div>
+                <button class="cyber-btn" onclick="clearHistory()" 
+                        style="margin-top: 1rem; background: rgba(255,64,129,0.8);">
+                    🗑️ 清除历史
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let history = JSON.parse(localStorage.getItem('timestampHistory') || '[]');
+        
+        // 实时更新时间戳
+        function updateLiveTimestamp() {
+            document.getElementById('liveTimestamp').textContent = 
+                `${Date.now()} (${new Date().toLocaleString()})`;
+        }
+        setInterval(updateLiveTimestamp, 1000);
+        updateLiveTimestamp();
+
+        // 核心转换逻辑
+        function convertTimestamp() {
+            const input = document.getElementById('timeInput').value;
+            const fromZone = document.getElementById('fromTimezone').value;
+            const toZone = document.getElementById('toTimezone').value;
+            
+            try {
+                const date = input ? new Date(input) : new Date();
+                const fromDate = formatDate(date, fromZone);
+                const toDate = formatDate(date, toZone);
+                
+                document.getElementById('outputTime').textContent = toDate;
+                addHistory(fromDate, toDate);
+            } catch (error) {
+                showAlert('时间格式错误!', 'red');
+            }
+        }
+
+        // 日期格式化函数
+        function formatDate(date, timeZone) {
+            return new Intl.DateTimeFormat('zh-CN', {
+                timeZone: timeZone === 'local' ? undefined : timeZone,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZoneName: 'short'
+            }).format(date);
+        }
+
+        // 历史记录管理
+        function addHistory(from, to) {
+            history.unshift({
+                input: from,
+                output: to,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('timestampHistory', JSON.stringify(history));
+            updateHistoryDisplay();
+        }
+
+        function updateHistoryDisplay() {
+            const container = document.getElementById('conversionHistory');
+            container.innerHTML = history.map((item, index) => `
+                <div class="history-item">
+                    <div style="color: var(--quantum-blue);">
+                        ${new Date(item.timestamp).toLocaleString()}
+                    </div>
+                    <div style="color: var(--matrix-green);">
+                        ${item.input} → ${item.output}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function clearHistory() {
+            history = [];
+            localStorage.removeItem('timestampHistory');
+            updateHistoryDisplay();
+        }
+
+        // 工具函数
+        function showAlert(message, color) {
+            const alert = document.createElement('div');
+            alert.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.9);
+                color: ${color};
+                padding: 1rem 2rem;
+                border-radius: 8px;
+                border: 1px solid ${color};
+                box-shadow: 0 0 20px ${color};
+                z-index: 1000;
+            `;
+            alert.textContent = message;
+            document.body.appendChild(alert);
+            setTimeout(() => alert.remove(), 2000);
+        }
+
+        // 事件绑定
+        window.convertNow = convertTimestamp;
+        window.updateConversion = convertTimestamp;
+
+        // 初始化加载
+        updateHistoryDisplay();
+    </script>
+</body>
+</html>

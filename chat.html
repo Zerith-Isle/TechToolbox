@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI助手 - TechToolbox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="./static/css/chat.css" rel="stylesheet">
+</head>
+<body>
+    <div class="history-sidebar">
+        <div class="history-header">
+            <div class="history-title">历史对话</div>
+            <button class="new-chat-btn" onclick="startNewChat()">新对话</button>
+        </div>
+        <div class="history-list" id="historyList"></div>
+            </div>
+            
+    <div class="chat-main">
+        <header class="header">
+            <h1>AI助手</h1>
+            <a href="index.html" class="back-button">
+                <span>←</span> 返回首页
+            </a>
+        </header>
+
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai-message">
+                    <div class="avatar ai-avatar">DS</div>
+                    <div class="message-content">
+                        你好！我是你的AI助手，有什么我可以帮你的吗？
+                        <div class="message-time">系统提示</div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-container">
+                <input type="text" id="userInput" placeholder="输入你的问题..." autocomplete="off">
+                <button id="sendButton">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/>
+                    </svg>
+                    发送
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./static/js/chat.js"></script>
+</body>
+</html> 

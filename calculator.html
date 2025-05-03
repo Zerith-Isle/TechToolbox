@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科学计算器 - TechToolbox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.5.0/math.js"></script>
+    <style>
+        @import url('./static/css/calculator.css');
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="back-btn">← 返回首页</a>
+        <h1 style="color: var(--neon-glow);">科学计算器</h1>
+    </header>
+
+    <div class="calculator-container">
+        <div class="display">
+            <input type="text" id="display" readonly>
+        </div>
+
+        <div class="keypad">
+            <!-- 第一行：高级功能 -->
+            <button class="scientific" onclick="inputFunc('sin(')">sin</button>
+            <button class="scientific" onclick="inputFunc('cos(')">cos</button>
+            <button class="scientific" onclick="inputFunc('tan(')">tan</button>
+            <button class="scientific" onclick="inputFunc('sqrt(')">√</button>
+            <button class="scientific" onclick="inputFunc('log(')">log</button>
+
+            <!-- 第二行：扩展符号 -->
+            <button class="constant" onclick="inputConstant('π')">π</button>
+            <button class="constant" onclick="inputConstant('e')">e</button>
+            <button class="operator" onclick="inputOperator('%')">%</button>
+            <button class="operator" onclick="inputOperator('^')">x^y</button>
+            <button class="operator" onclick="inputOperator('!')">!</button>
+
+            <!-- 第三行：数字和基本运算 -->
+            <button class="number" onclick="inputNumber('7')">7</button>
+            <button class="number" onclick="inputNumber('8')">8</button>
+            <button class="number" onclick="inputNumber('9')">9</button>
+            <button class="operator" onclick="inputOperator('+')">+</button>
+            <button class="operator" onclick="inputOperator('(')">(</button>
+
+            <!-- 第四行 -->
+            <button class="number" onclick="inputNumber('4')">4</button>
+            <button class="number" onclick="inputNumber('5')">5</button>
+            <button class="number" onclick="inputNumber('6')">6</button>
+            <button class="operator" onclick="inputOperator('-')">-</button>
+            <button class="operator" onclick="inputOperator(')')">)</button>
+
+            <!-- 第五行 -->
+            <button class="number" onclick="inputNumber('1')">1</button>
+            <button class="number" onclick="inputNumber('2')">2</button>
+            <button class="number" onclick="inputNumber('3')">3</button>
+            <button class="operator" onclick="inputOperator('*')">×</button>
+            <button class="operator" onclick="inputOperator('1/')">1/x</button>
+
+            <!-- 第六行 -->
+            <button class="number" onclick="inputNumber('0')">0</button>
+            <button class="number" onclick="inputNumber('.')">.</button>
+            <button class="operator" onclick="calculate()">=</button>
+            <button class="operator" onclick="inputOperator('/')">÷</button>
+            <button class="operator" onclick="clearEntry()">CE</button>
+
+            <!-- 第七行：高级功能 -->
+                <button class="scientific" onclick="inputFunc('abs(')">abs</button>
+                <button class="scientific" onclick="inputFunc('exp(')">exp</button>
+                <button class="scientific" onclick="inputOperator('mod')">mod</button>
+                <button class="scientific" onclick="inputFunc('pow(')">pow</button>
+            <button class="scientific" onclick="clearAll()">AC</button>
+        </div>
+
+        <div class="history-panel">
+            <h3>计算历史 📜</h3>
+            <div id="historyList"></div>
+            <div class="history-buttons">
+                <button onclick="clearHistory()">清除历史</button>
+                <button onclick="exportHistory()">导出CSV</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./static/js/calculator.js"></script>
+</body>
+</html>

@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>量子账本 - TechToolbox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-blue: #2196F3;
+            --cyber-blue: #00bcd4;
+            --deep-space: #0a192f;
+            --neon-glow: #64ffda;
+            --success-green: #76ff03;
+            --warning-red: #ff4081;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --border-color: rgba(100, 255, 218, 0.2);
+            --card-bg: rgba(10, 25, 47, 0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--deep-space) 0%, #020c1b 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(10, 25, 47, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--neon-glow);
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+        }
+
+        .back-btn {
+            color: var(--neon-glow);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: opacity 0.3s;
+        }
+
+        .back-btn:hover {
+            opacity: 0.8;
+        }
+
+        .finance-container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .transaction-form {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 40px rgba(33, 150, 243, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .transaction-form:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 50px rgba(33, 150, 243, 0.2);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            color: var(--neon-glow);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .finance-input {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.8rem;
+            color: var(--neon-glow);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .finance-input:focus {
+            outline: none;
+            border-color: var(--cyber-blue);
+            box-shadow: 0 0 15px rgba(0, 188, 212, 0.3);
+        }
+
+        .type-toggle {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .type-btn {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .type-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .type-btn.expense {
+            background: rgba(255, 64, 129, 0.2);
+            color: var(--warning-red);
+        }
+
+        .type-btn.income {
+            background: rgba(118, 255, 3, 0.2);
+            color: var(--success-green);
+        }
+
+        .type-btn.active {
+            border-color: var(--neon-glow);
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.3);
+        }
+
+        .chart-container {
+            height: 400px;
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+
+        .transaction-list {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .transaction-list h3 {
+            color: var(--cyber-blue);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .transaction-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .transaction-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .amount.income { 
+            color: var(--success-green);
+            font-weight: 500;
+        }
+        
+        .amount.expense { 
+            color: var(--warning-red);
+            font-weight: 500;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            color: var(--warning-red);
+            transform: scale(1.1);
+        }
+
+        .import-export {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .import-export-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background: var(--input-bg);
+            color: var(--neon-glow);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .import-export-btn:hover {
+            background: var(--card-bg);
+            border-color: var(--neon-glow);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .finance-container {
+                padding: 1rem;
+                margin: 1rem;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .finance-container {
+                padding: 0.5rem;
+                margin: 0.5rem;
+            }
+
+            .transaction-form {
+                padding: 1rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .type-btn {
+                padding: 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .chart-container {
+                height: 250px;
+                padding: 1rem;
+            }
+
+            .transaction-item {
+                grid-template-columns: auto 1fr auto;
+            }
+
+            .transaction-item .date {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="back-btn">← 返回首页</a>
+        <h1>量子财务管家</h1>
+    </header>
+
+    <div class="finance-container">
+        <div class="dashboard-grid">
+            <!-- 左侧：输入表单和图表 -->
+            <div>
+                <div class="transaction-form">
+                    <div class="type-toggle">
+                        <button class="type-btn expense active" data-type="expense" 
+                                onclick="toggleType('expense')">
+                            📉 支出
+                        </button>
+                        <button class="type-btn income" data-type="income"
+                                onclick="toggleType('income')">
+                            📈 收入
+                        </button>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>金额</label>
+                            <input type="number" class="finance-input" id="amount">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>分类</label>
+                            <select class="finance-input" id="category">
+                                <option value="餐饮">🍴 餐饮</option>
+                                <option value="交通">🚗 交通</option>
+                                <option value="购物">🛍️ 购物</option>
+                                <option value="工资">💼 工资</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>日期</label>
+                            <input type="date" class="finance-input" id="date">
+                        </div>
+
+                        <div class="input-group">
+                            <label>备注</label>
+                            <input type="text" class="finance-input" id="note">
+                        </div>
+                    </div>
+
+                    <div class="import-export">
+                        <label class="import-export-btn" for="importFile">
+                            📥 导入CSV
+                        </label>
+                        <button class="import-export-btn" onclick="exportToCSV()">
+                            📤 导出CSV
+                        </button>
+                    </div>
+
+                    <input type="file" id="importFile" class="file-input" 
+                           accept=".csv" onchange="importFromCSV(event)">
+                    
+                    <button class="import-export-btn" onclick="addTransaction()" 
+                            style="margin-top: 1rem;">
+                        💾 保存记录
+                    </button>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="financeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 右侧：交易记录和统计 -->
+            <div class="transaction-list">
+                <h3>交易记录 📋</h3>
+                <div id="transactions">
+                    <!-- 交易记录将通过JavaScript动态加载 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化图表
+        const ctx = document.getElementById('financeChart').getContext('2d');
+        let financeChart;
+
+        // 交易记录数据
+        let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+        let currentType = 'expense';
+
+        // 图表配置
+        const chartConfig = {
+            type: 'doughnut',
+            data: {
+                labels: [],
+                datasets: [{
+                    data: [],
+                    backgroundColor: [
+                        '#64ffda',
+                        '#00bcd4',
+                        '#2196F3',
+                        '#76ff03',
+                        '#ff4081'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: '#64ffda',
+                            font: {
+                                family: 'Inter',
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // 初始化
+        function initChart() {
+            updateChartData();
+            financeChart = new Chart(ctx, chartConfig);
+        }
+
+        // 更新图表数据
+        function updateChartData() {
+            const categories = {};
+            transactions.forEach(t => {
+                if (t.type === currentType) {
+                    categories[t.category] = (categories[t.category] || 0) + t.amount;
+                }
+            });
+
+            chartConfig.data.labels = Object.keys(categories);
+            chartConfig.data.datasets[0].data = Object.values(categories);
+        }
+
+        // 添加交易记录
+        function addTransaction() {
+            const transaction = {
+                id: Date.now(),
+                type: currentType,
+                amount: parseFloat(document.getElementById('amount').value),
+                category: document.getElementById('category').value,
+                date: document.getElementById('date').value || new Date().toISOString().split('T')[0],
+                note: document.getElementById('note').value
+            };
+
+            if (!transaction.amount || transaction.amount <= 0) {
+                alert('请输入有效金额');
+                return;
+            }
+
+            transactions.push(transaction);
+            saveTransactions();
+            renderTransactions();
+            updateChart();
+            clearForm();
+        }
+
+        // 渲染交易记录
+        function renderTransactions() {
+            const container = document.getElementById('transactions');
+            container.innerHTML = transactions.map(t => `
+                <div class="transaction-item" data-id="${t.id}">
+                    <div style="color: ${t.type === 'income' ? 
+                        'var(--success-green)' : 'var(--warning-red)'}">
+                        ${t.type === 'income' ? '↑' : '↓'}
+                    </div>
+                    <div>
+                        <div>${t.category}</div>
+                        <div class="date" style="color: var(--text-secondary); font-size: 0.9em;">
+                            ${t.date}
+                        </div>
+                    </div>
+                    <div class="amount ${t.type}">¥${t.amount.toFixed(2)}</div>
+                    <button class="action-btn" onclick="deleteTransaction(${t.id})">🗑️</button>
+                </div>
+            `).reverse().join('');
+        }
+
+        // 保存数据
+        function saveTransactions() {
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+        }
+
+        // 删除交易记录
+        function deleteTransaction(id) {
+            if (confirm('确定要删除这条记录吗？')) {
+            transactions = transactions.filter(t => t.id !== id);
+            saveTransactions();
+            renderTransactions();
+            updateChart();
+            }
+        }
+
+        // 切换收入/支出类型
+        function toggleType(type) {
+            currentType = type;
+            document.querySelectorAll('.type-btn').forEach(btn => 
+                btn.classList.remove('active'));
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+            updateChart();
+        }
+
+        // 更新图表
+        function updateChart() {
+            financeChart.destroy();
+            updateChartData();
+            financeChart = new Chart(ctx, chartConfig);
+        }
+
+        // 清空表单
+        function clearForm() {
+            document.getElementById('amount').value = '';
+            document.getElementById('note').value = '';
+        }
+
+        // 导出CSV
+        function exportToCSV() {
+            try {
+                const headers = ['类型', '金额', '分类', '日期', '备注'];
+                const rows = transactions.map(t => [
+                    t.type === 'income' ? '收入' : '支出',
+                    t.amount,
+                    t.category,
+                    t.date,
+                    t.note || ''
+                ]);
+
+                const csvContent = [
+                    headers.join(','),
+                    ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+                ].join('\n');
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `财务记录_${new Date().toISOString().split('T')[0]}.csv`;
+                
+                // 确保链接在文档中
+                document.body.appendChild(link);
+                
+                // 使用setTimeout确保DOM更新完成
+                setTimeout(() => {
+                    try {
+                        link.click();
+                    } catch (error) {
+                        console.error('导出失败:', error);
+                        alert('导出失败，请重试');
+                    } finally {
+                        // 清理
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                    }
+                }, 100);
+            } catch (error) {
+                console.error('导出过程出错:', error);
+                alert('导出失败，请重试');
+            }
+        }
+
+        // 导入CSV
+        function importFromCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csv = e.target.result;
+                const lines = csv.split('\n');
+                const headers = lines[0].split(',');
+
+                const newTransactions = lines.slice(1)
+                    .filter(line => line.trim())
+                    .map(line => {
+                        const values = line.split(',');
+                        return {
+                            id: Date.now() + Math.random(),
+                            type: values[0] === '收入' ? 'income' : 'expense',
+                            amount: parseFloat(values[1]),
+                            category: values[2],
+                            date: values[3],
+                            note: values[4] || ''
+                        };
+                    });
+
+                if (confirm(`是否导入 ${newTransactions.length} 条记录？`)) {
+                    transactions = [...newTransactions, ...transactions];
+                    saveTransactions();
+                    renderTransactions();
+                    updateChart();
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // 初始化执行
+        initChart();
+        renderTransactions();
+    </script>
+</body>
+</html>

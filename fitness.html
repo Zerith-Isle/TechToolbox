@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>量子健身 - TechToolbox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-blue: #2196F3;
+            --cyber-blue: #00bcd4;
+            --deep-space: #0a192f;
+            --neon-glow: #64ffda;
+            --success-green: #76ff03;
+            --warning-red: #ff4081;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --border-color: rgba(100, 255, 218, 0.2);
+            --card-bg: rgba(10, 25, 47, 0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--deep-space) 0%, #020c1b 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(10, 25, 47, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--neon-glow);
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+        }
+
+        .back-btn {
+            color: var(--neon-glow);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: opacity 0.3s;
+        }
+
+        .back-btn:hover {
+            opacity: 0.8;
+        }
+
+        .fitness-container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .profile-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .input-card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 40px rgba(33, 150, 243, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .input-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 50px rgba(33, 150, 243, 0.2);
+        }
+
+        .input-card h3 {
+            color: var(--neon-glow);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .fitness-input {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            color: var(--neon-glow);
+            font-size: 1rem;
+            transition: all 0.3s;
+            margin-top: 0.5rem;
+        }
+
+        .fitness-input:focus {
+            outline: none;
+            border-color: var(--cyber-blue);
+            box-shadow: 0 0 15px rgba(0, 188, 212, 0.3);
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stats-card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        .plan-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .plan-card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(100, 255, 218, 0.2);
+        }
+
+        .plan-card h3 {
+            color: var(--neon-glow);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .day-plan {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+        }
+
+        .exercise-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .exercise-item {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .exercise-item:hover {
+            background: rgba(0, 0, 0, 0.4);
+            transform: translateX(5px);
+        }
+
+        .exercise-item span:last-child {
+            color: var(--cyber-blue);
+            font-weight: 500;
+        }
+
+        .generate-btn {
+            background: linear-gradient(45deg, var(--neon-glow), var(--cyber-blue));
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            color: var(--deep-space);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 2rem auto;
+            display: block;
+            width: fit-content;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .fitness-container {
+                padding: 1rem;
+                margin: 1rem;
+            }
+
+            .profile-section,
+            .stats-section,
+            .plan-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.2rem;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .fitness-container {
+                padding: 0.5rem;
+                margin: 0.5rem;
+            }
+
+            .input-card,
+            .stats-card,
+            .plan-card {
+                padding: 1rem;
+            }
+
+            .fitness-input {
+                padding: 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .generate-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .chart-container {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="back-btn">← 返回首页</a>
+        <h1>量子健身规划师</h1>
+    </header>
+
+    <div class="fitness-container">
+        <div class="profile-section">
+            <div class="input-card">
+                <h3>🏋️ 基本信息</h3>
+                <input type="number" class="fitness-input" placeholder="年龄" id="age">
+                <input type="number" class="fitness-input" placeholder="体重 (kg)" id="weight">
+                <input type="number" class="fitness-input" placeholder="身高 (cm)" id="height">
+            </div>
+
+            <div class="input-card">
+                <h3>🎯 健身目标</h3>
+                <select class="fitness-input" id="goal">
+                    <option>增肌塑形</option>
+                    <option>减脂瘦身</option>
+                    <option>力量提升</option>
+                    <option>体能增强</option>
+                </select>
+                <select class="fitness-input" id="level">
+                    <option>初级 (0-3个月)</option>
+                    <option>中级 (3-6个月)</option>
+                    <option>高级 (6个月+)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stats-card">
+                <h3>📊 体重变化趋势</h3>
+                <div class="chart-container">
+                    <canvas id="weightChart"></canvas>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <h3>📈 训练完成度</h3>
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <button class="generate-btn" onclick="generatePlan()">
+            🚀 生成智能计划
+        </button>
+
+        <div class="plan-container" id="planContainer">
+            <!-- 训练计划将通过JavaScript动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 初始化图表
+        const weightCtx = document.getElementById('weightChart').getContext('2d');
+        const progressCtx = document.getElementById('progressChart').getContext('2d');
+        let weightChart, progressChart;
+
+        // 模拟数据
+        const weightData = {
+            labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+            datasets: [{
+                label: '体重 (kg)',
+                data: [75, 73, 72, 71, 70, 69],
+                borderColor: '#64ffda',
+                backgroundColor: 'rgba(100, 255, 218, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        };
+
+        const progressData = {
+            labels: ['周一', '周三', '周五', '周日'],
+            datasets: [{
+                label: '完成度 (%)',
+                data: [85, 90, 75, 95],
+                backgroundColor: [
+                    'rgba(100, 255, 218, 0.8)',
+                    'rgba(0, 188, 212, 0.8)',
+                    'rgba(33, 150, 243, 0.8)',
+                    'rgba(118, 255, 3, 0.8)'
+                ]
+            }]
+        };
+
+        // 图表配置
+        const chartConfig = {
+            weight: {
+                type: 'line',
+                data: weightData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#64ffda'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#64ffda'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#64ffda'
+                            }
+                        }
+                    }
+                }
+            },
+            progress: {
+                type: 'bar',
+                data: progressData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#64ffda'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#64ffda'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#64ffda'
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // 初始化图表
+        function initCharts() {
+            weightChart = new Chart(weightCtx, chartConfig.weight);
+            progressChart = new Chart(progressCtx, chartConfig.progress);
+        }
+
+        // 训练计划数据
+        const workoutDatabase = {
+            增肌塑形: {
+                初级: {
+                    ageRange: [18, 60],
+                    days: ['周一: 胸部', '周三: 背部', '周五: 腿部'],
+                    exercises: {
+                        '胸部': ['平板卧推', '上斜哑铃推举', '双杠臂屈伸'],
+                        '背部': ['引体向上', '杠铃划船', '高位下拉'],
+                        '腿部': ['深蹲', '腿举', '箭步走']
+                    }
+                },
+                中级: {
+                    ageRange: [18, 60],
+                    days: ['周一: 胸部', '周二: 背部', '周四: 腿部', '周六: 肩部'],
+                    exercises: {
+                        '胸部': ['平板卧推', '上斜哑铃推举', '双杠臂屈伸', '器械夹胸'],
+                        '背部': ['引体向上', '杠铃划船', '高位下拉', '单臂哑铃划船'],
+                        '腿部': ['深蹲', '腿举', '箭步走', '腿弯举'],
+                        '肩部': ['杠铃推举', '哑铃侧平举', '面拉', '反向飞鸟']
+                    }
+                },
+                高级: {
+                    ageRange: [18, 60],
+                    days: ['周一: 胸部', '周二: 背部', '周三: 腿部', '周五: 肩部', '周六: 手臂'],
+                    exercises: {
+                        '胸部': ['平板卧推', '上斜哑铃推举', '双杠臂屈伸', '器械夹胸', '下斜卧推'],
+                        '背部': ['引体向上', '杠铃划船', '高位下拉', '单臂哑铃划船', '直臂下压'],
+                        '腿部': ['深蹲', '腿举', '箭步走', '腿弯举', '腿屈伸'],
+                        '肩部': ['杠铃推举', '哑铃侧平举', '面拉', '反向飞鸟', '前平举'],
+                        '手臂': ['杠铃弯举', '三头肌下压', '锤式弯举', '颈后臂屈伸', '集中弯举']
+                    }
+                }
+            },
+            减脂瘦身: {
+                初级: {
+                    ageRange: [16, 70],
+                    days: ['周一: 全身', '周三: 全身', '周五: 全身'],
+                    exercises: {
+                        '全身': ['开合跳', '高抬腿', '登山跑', '波比跳', '平板支撑']
+                    }
+                },
+                中级: {
+                    ageRange: [16, 70],
+                    days: ['周一: HIIT', '周三: 力量', '周五: 有氧', '周日: 恢复'],
+                    exercises: {
+                        'HIIT': ['波比跳', '登山跑', '高抬腿', '开合跳', '深蹲跳'],
+                        '力量': ['深蹲', '俯卧撑', '平板支撑', '箭步走', '仰卧起坐'],
+                        '有氧': ['跑步', '跳绳', '椭圆机', '划船机', '自行车'],
+                        '恢复': ['瑜伽', '拉伸', '泡沫轴', '冥想', '散步']
+                    }
+                },
+                高级: {
+                    ageRange: [16, 70],
+                    days: ['周一: HIIT', '周二: 力量', '周四: HIIT', '周五: 力量', '周日: 有氧'],
+                    exercises: {
+                        'HIIT': ['波比跳', '登山跑', '高抬腿', '开合跳', '深蹲跳', '俯卧撑跳'],
+                        '力量': ['深蹲', '硬拉', '卧推', '引体向上', '箭步走', '平板支撑'],
+                        '有氧': ['跑步', '跳绳', '椭圆机', '划船机', '自行车', '游泳']
+                    }
+                }
+            },
+            力量提升: {
+                初级: {
+                    ageRange: [18, 65],
+                    days: ['周一: 全身', '周三: 全身', '周五: 全身'],
+                    exercises: {
+                        '全身': ['深蹲', '硬拉', '卧推', '引体向上', '杠铃划船']
+                    }
+                },
+                中级: {
+                    ageRange: [18, 65],
+                    days: ['周一: 下肢', '周三: 上肢', '周五: 全身'],
+                    exercises: {
+                        '下肢': ['深蹲', '硬拉', '腿举', '箭步走', '腿弯举'],
+                        '上肢': ['卧推', '引体向上', '杠铃划船', '肩推', '双杠臂屈伸'],
+                        '全身': ['深蹲', '硬拉', '卧推', '引体向上', '杠铃划船']
+                    }
+                },
+                高级: {
+                    ageRange: [18, 65],
+                    days: ['周一: 下肢', '周二: 上肢', '周四: 下肢', '周五: 上肢', '周六: 全身'],
+                    exercises: {
+                        '下肢': ['深蹲', '硬拉', '腿举', '箭步走', '腿弯举', '腿屈伸'],
+                        '上肢': ['卧推', '引体向上', '杠铃划船', '肩推', '双杠臂屈伸', '杠铃弯举'],
+                        '全身': ['深蹲', '硬拉', '卧推', '引体向上', '杠铃划船', '肩推']
+                    }
+                }
+            },
+            体能增强: {
+                初级: {
+                    ageRange: [16, 70],
+                    days: ['周一: 基础', '周三: 基础', '周五: 基础'],
+                    exercises: {
+                        '基础': ['慢跑', '跳绳', '平板支撑', '深蹲', '俯卧撑']
+                    }
+                },
+                中级: {
+                    ageRange: [16, 70],
+                    days: ['周一: 耐力', '周三: 力量', '周五: 敏捷', '周日: 恢复'],
+                    exercises: {
+                        '耐力': ['长跑', '游泳', '自行车', '划船机', '椭圆机'],
+                        '力量': ['深蹲', '硬拉', '卧推', '引体向上', '箭步走'],
+                        '敏捷': ['折返跑', '梯子训练', '跳箱', '敏捷球', '侧向移动'],
+                        '恢复': ['瑜伽', '拉伸', '泡沫轴', '冥想', '散步']
+                    }
+                },
+                高级: {
+                    ageRange: [16, 70],
+                    days: ['周一: 耐力', '周二: 力量', '周四: 敏捷', '周五: 综合', '周日: 恢复'],
+                    exercises: {
+                        '耐力': ['长跑', '游泳', '自行车', '划船机', '椭圆机', '登山'],
+                        '力量': ['深蹲', '硬拉', '卧推', '引体向上', '箭步走', '肩推'],
+                        '敏捷': ['折返跑', '梯子训练', '跳箱', '敏捷球', '侧向移动', '反应训练'],
+                        '综合': ['波比跳', '登山跑', '高抬腿', '开合跳', '深蹲跳', '俯卧撑跳'],
+                        '恢复': ['瑜伽', '拉伸', '泡沫轴', '冥想', '散步', '按摩']
+                    }
+                }
+            }
+        };
+
+        // 智能匹配训练计划
+        function findBestPlan(age, goal, level) {
+            const goalPlans = workoutDatabase[goal];
+            if (!goalPlans) return null;
+
+            // 找到最适合的级别
+            let bestLevel = null;
+            let bestMatch = null;
+
+            for (const [planLevel, plan] of Object.entries(goalPlans)) {
+                const [minAge, maxAge] = plan.ageRange;
+                if (age >= minAge && age <= maxAge) {
+                    if (!bestMatch || planLevel === level) {
+                        bestLevel = planLevel;
+                        bestMatch = plan;
+                    }
+                }
+            }
+
+            // 如果没有找到完全匹配的，选择最接近的
+            if (!bestMatch) {
+                for (const [planLevel, plan] of Object.entries(goalPlans)) {
+                    const [minAge, maxAge] = plan.ageRange;
+                    if (age < minAge) {
+                        bestLevel = planLevel;
+                        bestMatch = plan;
+                        break;
+                    } else if (age > maxAge) {
+                        bestLevel = planLevel;
+                        bestMatch = plan;
+                    }
+                }
+            }
+
+            return bestMatch ? { level: bestLevel, plan: bestMatch } : null;
+        }
+
+        function generatePlan() {
+            const age = parseInt(document.getElementById('age').value) || 25;
+            const goal = document.getElementById('goal').value;
+            const level = document.getElementById('level').value.split(' ')[0];
+            const planContainer = document.getElementById('planContainer');
+            planContainer.innerHTML = '';
+            
+            const bestPlan = findBestPlan(age, goal, level);
+            if (!bestPlan) {
+                alert('暂无可用的训练计划');
+                return;
+            }
+
+            const { level: matchedLevel, plan } = bestPlan;
+            const [minAge, maxAge] = plan.ageRange;
+            
+            // 显示年龄适配提示
+            if (age < minAge || age > maxAge) {
+                const ageWarning = document.createElement('div');
+                ageWarning.className = 'plan-card';
+                ageWarning.innerHTML = `
+                    <h3>⚠️ 年龄适配提示</h3>
+                    <div class="day-plan">
+                        <p>您当前的年龄(${age}岁)不在推荐年龄范围(${minAge}-${maxAge}岁)内。</p>
+                        <p>系统已为您选择最适合的训练计划，请根据自身情况适当调整训练强度。</p>
+                    </div>
+                `;
+                planContainer.appendChild(ageWarning);
+            }
+
+            plan.days.forEach(dayInfo => {
+                const [day, focus] = dayInfo.split(': ');
+                const exercises = plan.exercises[focus];
+                
+                const card = document.createElement('div');
+                card.className = 'plan-card';
+                card.innerHTML = `
+                    <h3>${day} - ${focus}训练</h3>
+                    <div class="day-plan">
+                        <ul class="exercise-list">
+                            ${exercises.map(ex => `
+                                <li class="exercise-item">
+                                    <span>${ex}</span>
+                                    <span>${getRandomSets()}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+                planContainer.appendChild(card);
+            });
+        }
+
+        function getRandomSets() {
+            const sets = Math.floor(Math.random() * 2) + 3; // 3-4组
+            const reps = Math.floor(Math.random() * 3) + 10; // 10-12次
+            return `${sets}×${reps}`;
+        }
+
+        // 初始化执行
+        initCharts();
+        generatePlan();
+    </script>
+</body>
+</html>

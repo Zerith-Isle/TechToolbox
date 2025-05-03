@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>量子单位转换器 - TechToolbox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --quantum-blue: #00f3ff;
+            --cyber-purple: #bc00ff;
+            --neon-border: rgba(0, 243, 255, 0.3);
+            --matrix-green: #00ff9d;
+            --deep-space: #0a192f;
+            --card-bg: rgba(10, 25, 47, 0.95);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --input-bg: rgba(0, 0, 20, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--deep-space) 0%, #020c1b 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(10, 25, 47, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--neon-border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--quantum-blue);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+
+        .back-btn {
+            color: var(--quantum-blue);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: opacity 0.3s;
+        }
+
+        .back-btn:hover {
+            opacity: 0.8;
+        }
+
+        .converter-container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 2rem;
+            border: 1px solid var(--neon-border);
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-card::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 15px,
+                var(--neon-border) 15px,
+                var(--neon-border) 30px
+            );
+            animation: scanline 20s infinite linear;
+            opacity: 0.1;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            scrollbar-width: none;
+        }
+
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-button {
+            background: var(--input-bg);
+            border: 1px solid var(--neon-border);
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            color: var(--quantum-blue);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .tab-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        }
+
+        .tab-button.active {
+            background: var(--quantum-blue);
+            color: var(--deep-space);
+            box-shadow: 0 0 15px var(--quantum-blue);
+        }
+
+        .converter-card {
+            background: var(--input-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid var(--neon-border);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .converter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .unit-group {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .input-field {
+            background: var(--input-bg);
+            border: 2px solid var(--quantum-blue);
+            border-radius: 15px;
+            padding: 1rem;
+            color: var(--matrix-green);
+            font-size: 1.1em;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--matrix-green);
+            box-shadow: 0 0 15px rgba(0, 255, 157, 0.3);
+        }
+
+        .unit-select {
+            background: var(--input-bg);
+            border: 2px solid var(--quantum-blue);
+            border-radius: 15px;
+            padding: 1rem;
+            color: var(--matrix-green);
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300f3ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.5em;
+            padding-right: 3rem;
+        }
+
+        .unit-select:focus {
+            outline: none;
+            border-color: var(--matrix-green);
+            box-shadow: 0 0 15px rgba(0, 255, 157, 0.3);
+        }
+
+        .arrow {
+            color: var(--cyber-purple);
+            font-size: 1.5em;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        .result-box {
+            background: var(--input-bg);
+            border: 2px solid var(--matrix-green);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 1.4em;
+            color: var(--matrix-green);
+            margin-top: 2rem;
+            transition: all 0.3s;
+        }
+
+        .result-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 255, 157, 0.2);
+        }
+
+        .history-panel {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--input-bg);
+            border-radius: 15px;
+            border: 1px solid var(--neon-border);
+        }
+
+        .history-panel h3 {
+            color: var(--quantum-blue);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .history-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--neon-border);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .history-item:hover {
+            background: rgba(0, 243, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        .history-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .delete-history-item {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.3rem;
+            transition: all 0.3s;
+            opacity: 0;
+        }
+
+        .history-item:hover .delete-history-item {
+            opacity: 1;
+        }
+
+        .delete-history-item:hover {
+            background: rgba(255, 64, 129, 0.2);
+            color: var(--error-red);
+        }
+
+        .history-timestamp {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            margin-bottom: 0.5rem;
+        }
+
+        .clear-history-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--neon-border);
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            color: var(--quantum-blue);
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1.5rem;
+            font-weight: 500;
+        }
+
+        .clear-history-btn:hover {
+            background: var(--quantum-blue);
+            color: var(--deep-space);
+            box-shadow: 0 0 15px var(--quantum-blue);
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-50%); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .converter-container {
+                padding: 1rem;
+                margin: 1rem;
+            }
+
+            .main-card {
+                padding: 1.5rem;
+            }
+
+            .unit-group {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .arrow {
+                transform: rotate(90deg);
+            }
+
+            .category-tabs {
+                gap: 0.5rem;
+            }
+
+            .tab-button {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9em;
+            }
+
+            .result-box {
+                font-size: 1.2em;
+                padding: 1rem;
+            }
+
+            .history-panel {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .converter-container {
+                padding: 0.5rem;
+                margin: 0.5rem;
+            }
+
+            .main-card {
+                padding: 1rem;
+            }
+
+            .tab-button {
+                padding: 0.6rem 1rem;
+                font-size: 0.8em;
+            }
+
+            .input-field, .unit-select {
+                padding: 0.8rem;
+                font-size: 1em;
+            }
+
+            .result-box {
+                font-size: 1.1em;
+                padding: 0.8rem;
+            }
+
+            .history-panel {
+                padding: 1rem;
+            }
+
+            .clear-history-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="back-btn">← 返回首页</a>
+        <h1>量子单位转换器</h1>
+    </header>
+
+    <div class="converter-container">
+        <div class="main-card">
+            <div class="category-tabs">
+                <button class="tab-button active" onclick="switchCategory('length')">📏 长度</button>
+                <button class="tab-button" onclick="switchCategory('weight')">⚖️ 重量</button>
+                <button class="tab-button" onclick="switchCategory('temperature')">🌡️ 温度</button>
+                <button class="tab-button" onclick="switchCategory('area')">📐 面积</button>
+                <button class="tab-button" onclick="switchCategory('speed')">🚀 速度</button>
+            </div>
+
+            <!-- 长度转换 -->
+            <div class="converter-card" data-category="length">
+                <div class="unit-group">
+                    <input type="number" class="input-field" id="lengthInput" 
+                           placeholder="输入数值" step="any" oninput="convertLength()">
+                    <select class="unit-select" id="lengthFrom" onchange="convertLength()">
+                        <option value="m">米</option>
+                        <option value="km">千米</option>
+                        <option value="mile">英里</option>
+                        <option value="ft">英尺</option>
+                        <option value="in">英寸</option>
+                    </select>
+                    <div class="arrow">→</div>
+                    <select class="unit-select" id="lengthTo" onchange="convertLength()">
+                        <option value="km">千米</option>
+                        <option value="m">米</option>
+                        <option value="mile">英里</option>
+                        <option value="ft">英尺</option>
+                    </select>
+                    <div class="result-box" id="lengthResult"></div>
+                </div>
+            </div>
+
+            <!-- 重量转换 -->
+            <div class="converter-card" data-category="weight" style="display:none;">
+                <div class="unit-group">
+                    <input type="number" class="input-field" id="weightInput"
+                           placeholder="输入数值" step="any" oninput="convertWeight()">
+                    <select class="unit-select" id="weightFrom" onchange="convertWeight()">
+                        <option value="kg">千克</option>
+                        <option value="g">克</option>
+                        <option value="lb">磅</option>
+                        <option value="oz">盎司</option>
+                    </select>
+                    <div class="arrow">→</div>
+                    <select class="unit-select" id="weightTo" onchange="convertWeight()">
+                        <option value="lb">磅</option>
+                        <option value="kg">千克</option>
+                        <option value="g">克</option>
+                    </select>
+                    <div class="result-box" id="weightResult"></div>
+                </div>
+            </div>
+
+            <!-- 温度转换 -->
+            <div class="converter-card" data-category="temperature" style="display:none;">
+                <div class="unit-group">
+                    <input type="number" class="input-field" id="tempInput"
+                           placeholder="输入数值" step="any" oninput="convertTemperature()">
+                    <select class="unit-select" id="tempFrom" onchange="convertTemperature()">
+                        <option value="C">摄氏度</option>
+                        <option value="F">华氏度</option>
+                        <option value="K">开尔文</option>
+                    </select>
+                    <div class="arrow">→</div>
+                    <select class="unit-select" id="tempTo" onchange="convertTemperature()">
+                        <option value="F">华氏度</option>
+                        <option value="C">摄氏度</option>
+                        <option value="K">开尔文</option>
+                    </select>
+                    <div class="result-box" id="tempResult"></div>
+                </div>
+            </div>
+
+            <!-- 历史记录 -->
+            <div class="history-panel">
+                <h3>转换历史 🕰️</h3>
+                <div id="conversionHistory"></div>
+                <button class="clear-history-btn" onclick="clearConversionHistory()">
+                    清除历史记录
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 单位换算系数
+        const conversionRates = {
+            length: {
+                m: 1,
+                km: 1000,
+                mile: 1609.34,
+                ft: 0.3048,
+                in: 0.0254
+            },
+            weight: {
+                kg: 1,
+                g: 0.001,
+                lb: 0.453592,
+                oz: 0.0283495
+            }
+        };
+
+        // 温度转换函数
+        const tempConversions = {
+            C: {
+                F: (c) => c * 9/5 + 32,
+                K: (c) => c + 273.15
+            },
+            F: {
+                C: (f) => (f - 32) * 5/9,
+                K: (f) => (f - 32) * 5/9 + 273.15
+            },
+            K: {
+                C: (k) => k - 273.15,
+                F: (k) => (k - 273.15) * 9/5 + 32
+            }
+        };
+
+        let history = JSON.parse(localStorage.getItem('conversionHistory') || '[]');
+
+        function switchCategory(category) {
+            // 切换标签样式
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 显示对应卡片
+            document.querySelectorAll('.converter-card').forEach(card => {
+                card.style.display = card.dataset.category === category ? 'block' : 'none';
+            });
+        }
+
+        function convertLength() {
+            const input = parseFloat(document.getElementById('lengthInput').value);
+            const fromUnit = document.getElementById('lengthFrom').value;
+            const toUnit = document.getElementById('lengthTo').value;
+            
+            const meters = input * conversionRates.length[fromUnit];
+            const result = meters / conversionRates.length[toUnit];
+            
+            updateResult('lengthResult', input, fromUnit, result, toUnit);
+        }
+
+        function convertWeight() {
+            const input = parseFloat(document.getElementById('weightInput').value);
+            const fromUnit = document.getElementById('weightFrom').value;
+            const toUnit = document.getElementById('weightTo').value;
+            
+            const kg = input * conversionRates.weight[fromUnit];
+            const result = kg / conversionRates.weight[toUnit];
+            
+            updateResult('weightResult', input, fromUnit, result, toUnit);
+        }
+
+        function convertTemperature() {
+            const input = parseFloat(document.getElementById('tempInput').value);
+            const fromUnit = document.getElementById('tempFrom').value;
+            const toUnit = document.getElementById('tempTo').value;
+            
+            const result = tempConversions[fromUnit][toUnit](input);
+            
+            updateResult('tempResult', input, fromUnit, result, toUnit);
+        }
+
+        function updateResult(elementId, input, fromUnit, result, toUnit) {
+            if (!isNaN(result)) {
+                const resultElement = document.getElementById(elementId);
+                resultElement.innerHTML = `
+                    ${input.toLocaleString()} ${getUnitName(fromUnit)} = 
+                    <span style="color: #ff9800;">${result.toFixed(4)}</span> ${getUnitName(toUnit)}
+                `;
+                
+                // 保存历史记录
+                history.push({
+                    type: document.querySelector('.tab-button.active').innerText,
+                    input: `${input} ${fromUnit}`,
+                    result: `${result.toFixed(4)} ${toUnit}`,
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('conversionHistory', JSON.stringify(history));
+                updateHistoryDisplay();
+            }
+        }
+
+        function getUnitName(unit) {
+            const unitNames = {
+                m: '米', km: '千米', mile: '英里', ft: '英尺', in: '英寸',
+                kg: '千克', g: '克', lb: '磅', oz: '盎司',
+                C: '°C', F: '°F', K: 'K'
+            };
+            return unitNames[unit];
+        }
+
+        function updateHistoryDisplay() {
+            const historyList = document.getElementById('conversionHistory');
+            historyList.innerHTML = history
+                .reverse()
+                .map((record, index) => `
+                    <div style="padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <div style="color: #888;">${new Date(record.timestamp).toLocaleString()}</div>
+                        <div>${record.type}：${record.input} → ${record.result}</div>
+                    </div>
+                `)
+                .join('');
+        }
+
+        function clearConversionHistory() {
+            history = [];
+            localStorage.removeItem('conversionHistory');
+            updateHistoryDisplay();
+        }
+
+        // 初始化显示历史记录
+        updateHistoryDisplay();
+    </script>
+</body>
+</html>
